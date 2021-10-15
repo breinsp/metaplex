@@ -27,7 +27,7 @@ export const AuctionListView = () => {
     ...useAuctions(AuctionViewState.Ended),
     ...useAuctions(AuctionViewState.BuyNow),
   ];
-  const [activeKey, setActiveKey] = useState(LiveAuctionViewState.All);
+  const [activeKey, setActiveKey] = useState(LiveAuctionViewState.Resale);
   const { isLoading } = useMeta();
   const { connected, publicKey } = useWallet();
   const breakpointColumnsObj = {
@@ -156,7 +156,7 @@ export const AuctionListView = () => {
       <Layout>
         <Content style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Col style={{ width: '100%', marginTop: 10 }}>
-            {liveAuctions.length >= 0 && (
+            {(
               <Row>
                 <Tabs
                   activeKey={activeKey}
@@ -168,7 +168,7 @@ export const AuctionListView = () => {
                   >
                     {liveAuctionsView}
                   </TabPane>
-                  {auctionsEnded.length > 0 && (
+                  {(
                     <TabPane
                       tab={
                         <span className="tab-title">Secondary Marketplace</span>
@@ -178,7 +178,7 @@ export const AuctionListView = () => {
                       {liveAuctionsView}
                     </TabPane>
                   )}
-                  {auctionsEnded.length > 0 && (
+                  {(
                     <TabPane
                       tab={<span className="tab-title">Ended Auctions</span>}
                       key={LiveAuctionViewState.Ended}
