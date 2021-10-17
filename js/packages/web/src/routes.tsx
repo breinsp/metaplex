@@ -8,11 +8,12 @@ import {
   ArtView,
   ArtworksView,
   AuctionCreateView,
-  AuctionView,
+  AuctionView, BeroView,
   HomeView,
 } from './views';
 import { AdminView } from './views/admin';
 import { BillingView } from './views/auction/billing';
+import React from 'react';
 
 export function Routes() {
   return (
@@ -21,6 +22,7 @@ export function Routes() {
         <Providers>
           <Switch>
             <Route exact path="/admin" component={() => <AdminView />} />
+            <Route exact path="/bero" component={() => <BeroView />} />
             <Route
               exact
               path="/analytics"
