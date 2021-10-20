@@ -1,7 +1,7 @@
-import {Button, Layout} from 'antd';
-import React, {useState} from 'react';
-import {AuctionView, AuctionViewState, useAuctions} from "../../hooks";
-import {settle} from "../../actions/settle";
+import { Button, Layout } from 'antd';
+import React, { useState } from 'react';
+import { AuctionView, AuctionViewState, useAuctions, useUserArts } from '../../hooks';
+import { settle } from '../../actions/settle';
 import {
   Bid,
   BidderMetadata,
@@ -14,17 +14,17 @@ import {
   toPublicKey,
   useConnection,
   useMeta,
-  useUserAccounts
-} from "@oyster/common";
-import {useWallet} from "@solana/wallet-adapter-react";
+  useUserAccounts,
+} from '@oyster/common';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 export const BeroView = () => {
   const connection = useConnection();
   const auctionsNeedingSettling = [...useAuctions(AuctionViewState.Ended), ...useAuctions(AuctionViewState.BuyNow)];
   const wallet = useWallet();
-  const {accountByMint} = useUserAccounts();
-  const {bidderMetadataByAuctionAndBidder} = useMeta();
-  const [pots, setPots] = useState<Record<string, ParsedAccount<BidderPot>>>({},);
+  const { accountByMint } = useUserAccounts();
+  const { metadata, bidderMetadataByAuctionAndBidder } = useMeta();
+  const [pots, setPots] = useState<Record<string, ParsedAccount<BidderPot>>>({});
 
   function getWinnerPotsByBidderKey(
     auctionView: AuctionView,
@@ -87,7 +87,7 @@ export const BeroView = () => {
 
     const myPayingAccount = accountByMint.get(auctionView.auction.info.tokenMint);
 
-    let escrowBalance = 0
+    let escrowBalance = 0;
     const tokenAccountBalance = await connection.getTokenAccountBalance(toPublicKey(auctionView.auctionManager.acceptPayment));
     if (tokenAccountBalance.value.uiAmount !== undefined && tokenAccountBalance.value.uiAmount !== null)
       escrowBalance = tokenAccountBalance.value.uiAmount;
@@ -102,37 +102,51 @@ export const BeroView = () => {
           myPayingAccount.pubkey,
           accountByMint,
         );
-        console.log('settled ' + auctionKey)
+        console.log('settled ' + auctionKey);
       } else {
-        console.error('myPayingAccount = undefined')
+        console.error('myPayingAccount = undefined');
       }
     } else {
-      console.error('escrow is 0')
+      console.error('escrow is 0');
     }
-  }
+  };
 
   const settleAll = async () => {
     console.log('AUCTIONS COUNT: ' + auctionsNeedingSettling.length);
     for (let i = 0; i < auctionsNeedingSettling.length; i++) {
       const auctionView: AuctionView = auctionsNeedingSettling[i];
       const auctionKey = auctionView.auction.pubkey;
-      console.log('settling ' + auctionKey)
+      console.log('settling ' + auctionKey);
       await settleEscrow(auctionView);
     }
-  }
+  };
+
+  const getCreated = async () => {
+    console.log(metadata);
+  };
 
   return (
     <Layout>
       Bero works
       <Button
-        type="primary"
-        size="large"
-        className="action-btn"
+        type='primary'
+        size='large'
+        className='action-btn'
         onClick={async () => {
-          await settleAll()
+          await settleAll();
         }}
       >
         SETTLE OUTSTANDING
+      </Button>
+      <Button
+        type='primary'
+        size='large'
+        className='action-btn'
+        onClick={async () => {
+          await getCreated();
+        }}
+      >
+        GET MY ARTWORK
       </Button>
     </Layout>
   );
